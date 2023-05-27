@@ -1,3 +1,7 @@
-# CommandLineTool
+# Lilac
 
-A description of this package.
+General purpose compiler with LLVM backend.
+
+Current status: under research
+
+### LICENSE: [MIT](LICENSE) 

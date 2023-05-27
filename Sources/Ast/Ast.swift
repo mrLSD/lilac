@@ -186,22 +186,55 @@ enum PrimitiveValue {
     var type: PrimitiveType {
         get {
             switch self {
-            case .U8: return PrimitiveType.u8
-            case .U16: return PrimitiveType.u16
-            case .U32: return PrimitiveType.u32
-            case .U64: return PrimitiveType.u64
-            case .I8: return PrimitiveType.i8
-            case .I16: return PrimitiveType.i16
-            case .I32: return PrimitiveType.i32
-            case .I64: return PrimitiveType.i64
-            case .F32: return PrimitiveType.f32
-            case .F64: return PrimitiveType.f64
-            case .Bool: return PrimitiveType.bool
-            case .String: return PrimitiveType.String
-            case .Char: return PrimitiveType.char
-            case .None: return PrimitiveType.None
+            case .U8:       return PrimitiveType.u8
+            case .U16:      return PrimitiveType.u16
+            case .U32:      return PrimitiveType.u32
+            case .U64:      return PrimitiveType.u64
+            case .I8:       return PrimitiveType.i8
+            case .I16:      return PrimitiveType.i16
+            case .I32:      return PrimitiveType.i32
+            case .I64:      return PrimitiveType.i64
+            case .F32:      return PrimitiveType.f32
+            case .F64:      return PrimitiveType.f64
+            case .Bool:     return PrimitiveType.bool
+            case .String:   return PrimitiveType.String
+            case .Char:     return PrimitiveType.char
+            case .None:     return PrimitiveType.None
             }
         }
+    }
+}
+
+enum ExpressionValue {
+    case ValueName(ValueName)
+    case PrimitiveValue(PrimitiveValue)
+    case FunctionCall(FunctionCall)
+}
+
+enum ExpressionOperations {
+    case PlusMinus
+    case Multiply
+    case Divide
+    case ShiftLeft
+    case ShiftRight
+    case And
+    case Or
+    case Xor
+    case Eq
+    case NotEq
+    case Great
+    case Less
+    case GreatEq
+    case LessEq
+}
+
+class Expression {
+    var expression_value: ExpressionValue
+    var operation: Optional<(ExpressionOperations, Expression)>
+
+    init(expression_value: ExpressionValue, operation: (ExpressionOperations, Expression)?) {
+        self.expression_value = expression_value
+        self.operation = operation
     }
 }
 
@@ -209,9 +242,22 @@ struct BodyStatement {
     let body: String
 }
 
-struct ExpressionOperations {
-    let body: String
+
+struct LetBinding: GetName {
+    var name: ValueName
+    var value_type: Optional<Type>
+    var value: Expression
+
+    func getName() -> String {
+        name.getName()
+    }
 }
 
+struct FunctionCall: GetName {
+    var name: FunctionName
+    var parameters: [Expression]
 
-
+    func getName() -> String {
+        name.getName()
+    }
+}
