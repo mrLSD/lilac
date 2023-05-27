@@ -4,9 +4,9 @@
 import PackageDescription
 
 let package = Package(
-        name: "CommandLineTool",
+        name: "Lilac",
         products: [
-            .library(name: "Ase", targets: ["Ast"])
+            .library(name: "Ast", targets: ["Ast"])
         ],
         dependencies: [
             .package(

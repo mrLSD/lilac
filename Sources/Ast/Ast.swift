@@ -5,7 +5,7 @@ protocol GetName {
 }
 
 protocol GetType {
-    func getType() -> String
+    func getTzype() -> String
 }
 
 struct Ident: GetName {
@@ -236,10 +236,6 @@ class Expression {
     }
 }
 
-struct BodyStatement {
-    let body: String
-}
-
 struct LetBinding: GetName {
     var name: ValueName
     var value_type: Type?
@@ -282,8 +278,92 @@ struct ExpressionCondition {
 class ExpressionLogicCondition {
     var left: ExpressionCondition
     var right: (LogicCondition, ExpressionLogicCondition)?
-    init(left: ExpressionCondition, right: (LogicCondition, ExpressionLogicCondition)?) {
+
+    init(left: ExpressionCondition,
+         right: (LogicCondition, ExpressionLogicCondition)?)
+    {
         self.left = left
         self.right = right
     }
 }
+
+enum IfCondition {
+    case Single(Expression)
+    case Logic(ExpressionLogicCondition)
+}
+
+class IfStatement {
+    var condition: IfCondition
+    var body: [IfBodyStatement]
+    var else_statement: [IfBodyStatement]?
+    var else_if_statement: [IfStatement]?
+
+    init(condition: IfCondition,
+         body: [IfBodyStatement],
+         else_statement: [IfBodyStatement]?,
+         else_if_statement: [IfStatement]?) {
+        self.condition = condition
+        self.body = body
+        self.else_statement = else_statement
+        self.else_if_statement = else_if_statement
+    }
+}
+
+class IfLoopStatement {
+    var condition: IfCondition
+    var body: [IfLoopBodyStatement]
+    var else_statement: [IfLoopBodyStatement]?
+    var else_if_statement: [IfLoopStatement]?
+    init(condition: IfCondition, body: [IfLoopBodyStatement], else_statement: [IfLoopBodyStatement]?, else_if_statement: [IfLoopStatement]?) {
+        self.condition = condition
+        self.body = body
+        self.else_statement = else_statement
+        self.else_if_statement = else_if_statement
+    }
+}
+
+enum BodyStatement {
+    case LetBinding(LetBinding)
+    case FunctionCall(FunctionCall)
+    case If(IfStatement)
+    case Loop([LoopBodyStatement])
+    case Expression(Expression)
+    case Return(Expression)
+}
+
+enum IfBodyStatement {
+    case LetBinding(LetBinding)
+    case FunctionCall(FunctionCall)
+    case If(IfStatement)
+    case Loop([LoopBodyStatement])
+    case Return(Expression)
+}
+
+enum IfLoopBodyStatement {
+    case LetBinding(LetBinding)
+    case FunctionCall(FunctionCall)
+    case IfLoop(IfLoopStatement)
+    case Loop([LoopBodyStatement])
+    case Return(Expression)
+    case Break
+    case Continue
+}
+
+enum LoopBodyStatement {
+    case LetBinding(LetBinding)
+    case FunctionCall(FunctionCall)
+    case IfLoop(IfLoopStatement)
+    case Loop([LoopBodyStatement])
+    case Return(Expression)
+    case Break
+    case Continue
+}
+
+enum MainStatement {
+    case Import(ImportPath)
+    case Constant(Constant)
+    case Types(StructTypes)
+    case Function(FunctionStatement)
+}
+
+typealias Main = [MainStatement]
