@@ -1,33 +1,38 @@
+/**
+   # AST representation
+   Represen Abstract syntax tree do describe complete graph tree.
+ */
+
 import Foundation
 
-protocol GetName {
+public protocol GetName {
     func getName() -> String
 }
 
-protocol GetType {
+public protocol GetType {
     func getTzype() -> String
 }
 
-struct Ident: GetName {
+public struct Ident: GetName {
     private let body: String
 
-    func getName() -> String {
+    public func getName() -> String {
         body
     }
 }
 
-struct ImportName: GetName {
+public struct ImportName: GetName {
     var ident: Ident
 
-    func getName() -> String {
+    public func getName() -> String {
         ident.getName()
     }
 }
 
-struct ImportPath: GetName {
+public struct ImportPath: GetName {
     var path: [ImportName]
 
-    func getName() -> String {
+    public func getName() -> String {
         path.map {
             $0.getName()
         }
@@ -35,41 +40,41 @@ struct ImportPath: GetName {
     }
 }
 
-struct ConstantName: GetName {
+public struct ConstantName: GetName {
     var ident: Ident
 
-    func getName() -> String {
+    public func getName() -> String {
         ident.getName()
     }
 }
 
-struct FunctionName: GetName {
+public struct FunctionName: GetName {
     var ident: Ident
 
-    func getName() -> String {
+    public func getName() -> String {
         ident.getName()
     }
 }
 
-struct ParameterName: GetName {
+public struct ParameterName: GetName {
     var ident: Ident
 
-    func getName() -> String {
+    public func getName() -> String {
         ident.getName()
     }
 }
 
-struct ValueName: GetName {
+public struct ValueName: GetName {
     var ident: Ident
 
-    func getName() -> String {
+    public func getName() -> String {
         ident.getName()
     }
 }
 
 private typealias RawString = String
 
-enum PrimitiveType {
+public enum PrimitiveType {
     case u8
     case u16
     case u32
@@ -85,35 +90,35 @@ enum PrimitiveType {
     case char
     case None
 
-    func name() -> String {
+    public func name() -> String {
         RawString(describing: self)
     }
 }
 
-struct StructType: GetName {
+public struct StructType: GetName {
     var attr_name: Ident
     var attr_type: Type
 
-    func getName() -> String {
+    public func getName() -> String {
         attr_name.getName()
     }
 }
 
-struct StructTypes: GetName {
+public struct StructTypes: GetName {
     var struct_name: Ident
     var types: [StructType]
 
-    func getName() -> String {
+    public func getName() -> String {
         struct_name.getName()
     }
 }
 
-indirect enum Type: GetName {
+public indirect enum Type: GetName {
     case Primitive(PrimitiveType)
     case Struct(StructType)
     case Array(Type, UInt32)
 
-    func getName() -> String {
+    public func getName() -> String {
         switch self {
         case .Primitive(let type): return type.name()
         case .Struct(let type): return type.getName()
@@ -122,14 +127,14 @@ indirect enum Type: GetName {
     }
 }
 
-enum ConstantValue {
+public enum ConstantValue {
     case Constant(ConstantName)
     case Value(PrimitiveValue)
 }
 
-class ConstantExpression {
-    var value: ConstantValue
-    var operation: (ExpressionOperations, ConstantExpression)?
+public class ConstantExpression {
+    let value: ConstantValue
+    let operation: (ExpressionOperations, ConstantExpression)?
 
     init(value: ConstantValue, operation: (ExpressionOperations, ConstantExpression)?) {
         self.value = value
@@ -137,37 +142,37 @@ class ConstantExpression {
     }
 }
 
-struct Constant: GetName {
+public struct Constant: GetName {
     var constant_name: ConstantName
     var constant_type: Type
     var constant_value: ConstantExpression
 
-    func getName() -> String {
+    public func getName() -> String {
         constant_name.getName()
     }
 }
 
-struct FunctionParameter: GetName {
+public struct FunctionParameter: GetName {
     let parameter_name: ParameterName
     let parameter_type: Type
 
-    func getName() -> String {
+    public func getName() -> String {
         parameter_name.getName()
     }
 }
 
-struct FunctionStatement: GetName {
+public struct FunctionStatement: GetName {
     let name: FunctionName
     let parameters: [FunctionParameter]
     let result_type: Type
     let body: [BodyStatement]
 
-    func getName() -> String {
+    public func getName() -> String {
         name.getName()
     }
 }
 
-enum PrimitiveValue {
+public enum PrimitiveValue {
     case U8(UInt8)
     case U16(UInt16)
     case U32(UInt32)
@@ -183,7 +188,7 @@ enum PrimitiveValue {
     case Char(Character)
     case None
 
-    var type: PrimitiveType {
+    public var type: PrimitiveType {
         switch self {
         case .U8: return PrimitiveType.u8
         case .U16: return PrimitiveType.u16
@@ -226,36 +231,38 @@ enum ExpressionOperations {
     case LessEq
 }
 
-class Expression {
+public class Expression {
     var expression_value: ExpressionValue
     var operation: (ExpressionOperations, Expression)?
 
-    init(expression_value: ExpressionValue, operation: (ExpressionOperations, Expression)?) {
+    init(expression_value: ExpressionValue,
+         operation: (ExpressionOperations, Expression)?)
+    {
         self.expression_value = expression_value
         self.operation = operation
     }
 }
 
-struct LetBinding: GetName {
+public struct LetBinding: GetName {
     var name: ValueName
     var value_type: Type?
     var value: Expression
 
-    func getName() -> String {
+    public func getName() -> String {
         name.getName()
     }
 }
 
-struct FunctionCall: GetName {
+public struct FunctionCall: GetName {
     var name: FunctionName
     var parameters: [Expression]
 
-    func getName() -> String {
+    public func getName() -> String {
         name.getName()
     }
 }
 
-enum Condition {
+public enum Condition {
     case Great
     case Less
     case Eq
@@ -264,18 +271,18 @@ enum Condition {
     case NotEq
 }
 
-enum LogicCondition {
+public enum LogicCondition {
     case And
     case Or
 }
 
-struct ExpressionCondition {
+public struct ExpressionCondition {
     var left: Expression
     var condition: Condition
     var right: Expression
 }
 
-class ExpressionLogicCondition {
+public class ExpressionLogicCondition {
     var left: ExpressionCondition
     var right: (LogicCondition, ExpressionLogicCondition)?
 
@@ -287,12 +294,12 @@ class ExpressionLogicCondition {
     }
 }
 
-enum IfCondition {
+public enum IfCondition {
     case Single(Expression)
     case Logic(ExpressionLogicCondition)
 }
 
-class IfStatement {
+public class IfStatement {
     var condition: IfCondition
     var body: [IfBodyStatement]
     var else_statement: [IfBodyStatement]?
@@ -301,7 +308,8 @@ class IfStatement {
     init(condition: IfCondition,
          body: [IfBodyStatement],
          else_statement: [IfBodyStatement]?,
-         else_if_statement: [IfStatement]?) {
+         else_if_statement: [IfStatement]?)
+    {
         self.condition = condition
         self.body = body
         self.else_statement = else_statement
@@ -309,12 +317,17 @@ class IfStatement {
     }
 }
 
-class IfLoopStatement {
+public class IfLoopStatement {
     var condition: IfCondition
     var body: [IfLoopBodyStatement]
     var else_statement: [IfLoopBodyStatement]?
     var else_if_statement: [IfLoopStatement]?
-    init(condition: IfCondition, body: [IfLoopBodyStatement], else_statement: [IfLoopBodyStatement]?, else_if_statement: [IfLoopStatement]?) {
+
+    init(condition: IfCondition,
+         body: [IfLoopBodyStatement],
+         else_statement: [IfLoopBodyStatement]?,
+         else_if_statement: [IfLoopStatement]?)
+    {
         self.condition = condition
         self.body = body
         self.else_statement = else_statement
@@ -322,7 +335,7 @@ class IfLoopStatement {
     }
 }
 
-enum BodyStatement {
+public enum BodyStatement {
     case LetBinding(LetBinding)
     case FunctionCall(FunctionCall)
     case If(IfStatement)
@@ -331,7 +344,7 @@ enum BodyStatement {
     case Return(Expression)
 }
 
-enum IfBodyStatement {
+public enum IfBodyStatement {
     case LetBinding(LetBinding)
     case FunctionCall(FunctionCall)
     case If(IfStatement)
@@ -339,7 +352,7 @@ enum IfBodyStatement {
     case Return(Expression)
 }
 
-enum IfLoopBodyStatement {
+public enum IfLoopBodyStatement {
     case LetBinding(LetBinding)
     case FunctionCall(FunctionCall)
     case IfLoop(IfLoopStatement)
@@ -349,7 +362,7 @@ enum IfLoopBodyStatement {
     case Continue
 }
 
-enum LoopBodyStatement {
+public enum LoopBodyStatement {
     case LetBinding(LetBinding)
     case FunctionCall(FunctionCall)
     case IfLoop(IfLoopStatement)
@@ -359,11 +372,11 @@ enum LoopBodyStatement {
     case Continue
 }
 
-enum MainStatement {
+public enum MainStatement {
     case Import(ImportPath)
     case Constant(Constant)
     case Types(StructTypes)
     case Function(FunctionStatement)
 }
 
-typealias Main = [MainStatement]
+public typealias Main = [MainStatement]
