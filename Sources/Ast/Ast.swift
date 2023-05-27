@@ -5,7 +5,7 @@ protocol GetName {
 }
 
 protocol GetType {
-    func type() -> String
+    func getType() -> String
 }
 
 struct Ident: GetName {
@@ -29,9 +29,9 @@ struct ImportPath: GetName {
 
     func getName() -> String {
         path.map {
-                    $0.getName()
-                }
-                .joined(separator: ".")
+            $0.getName()
+        }
+        .joined(separator: ".")
     }
 }
 
@@ -129,7 +129,7 @@ enum ConstantValue {
 
 class ConstantExpression {
     var value: ConstantValue
-    var operation: Optional<(ExpressionOperations, ConstantExpression)> = nil
+    var operation: (ExpressionOperations, ConstantExpression)?
 
     init(value: ConstantValue, operation: (ExpressionOperations, ConstantExpression)?) {
         self.value = value
@@ -184,23 +184,21 @@ enum PrimitiveValue {
     case None
 
     var type: PrimitiveType {
-        get {
-            switch self {
-            case .U8:       return PrimitiveType.u8
-            case .U16:      return PrimitiveType.u16
-            case .U32:      return PrimitiveType.u32
-            case .U64:      return PrimitiveType.u64
-            case .I8:       return PrimitiveType.i8
-            case .I16:      return PrimitiveType.i16
-            case .I32:      return PrimitiveType.i32
-            case .I64:      return PrimitiveType.i64
-            case .F32:      return PrimitiveType.f32
-            case .F64:      return PrimitiveType.f64
-            case .Bool:     return PrimitiveType.bool
-            case .String:   return PrimitiveType.String
-            case .Char:     return PrimitiveType.char
-            case .None:     return PrimitiveType.None
-            }
+        switch self {
+        case .U8: return PrimitiveType.u8
+        case .U16: return PrimitiveType.u16
+        case .U32: return PrimitiveType.u32
+        case .U64: return PrimitiveType.u64
+        case .I8: return PrimitiveType.i8
+        case .I16: return PrimitiveType.i16
+        case .I32: return PrimitiveType.i32
+        case .I64: return PrimitiveType.i64
+        case .F32: return PrimitiveType.f32
+        case .F64: return PrimitiveType.f64
+        case .Bool: return PrimitiveType.bool
+        case .String: return PrimitiveType.String
+        case .Char: return PrimitiveType.char
+        case .None: return PrimitiveType.None
         }
     }
 }
@@ -230,7 +228,7 @@ enum ExpressionOperations {
 
 class Expression {
     var expression_value: ExpressionValue
-    var operation: Optional<(ExpressionOperations, Expression)>
+    var operation: (ExpressionOperations, Expression)?
 
     init(expression_value: ExpressionValue, operation: (ExpressionOperations, Expression)?) {
         self.expression_value = expression_value
@@ -242,10 +240,9 @@ struct BodyStatement {
     let body: String
 }
 
-
 struct LetBinding: GetName {
     var name: ValueName
-    var value_type: Optional<Type>
+    var value_type: Type?
     var value: Expression
 
     func getName() -> String {
@@ -259,5 +256,34 @@ struct FunctionCall: GetName {
 
     func getName() -> String {
         name.getName()
+    }
+}
+
+enum Condition {
+    case Great
+    case Less
+    case Eq
+    case GreatEq
+    case LessEq
+    case NotEq
+}
+
+enum LogicCondition {
+    case And
+    case Or
+}
+
+struct ExpressionCondition {
+    var left: Expression
+    var condition: Condition
+    var right: Expression
+}
+
+class ExpressionLogicCondition {
+    var left: ExpressionCondition
+    var right: (LogicCondition, ExpressionLogicCondition)?
+    init(left: ExpressionCondition, right: (LogicCondition, ExpressionLogicCondition)?) {
+        self.left = left
+        self.right = right
     }
 }
