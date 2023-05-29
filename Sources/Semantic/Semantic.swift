@@ -1,5 +1,7 @@
 import Foundation
 
+public protocol Codegen {}
+
 /// ValueName type
 public typealias ValueName = String
 /// InnerType type for values
@@ -102,7 +104,7 @@ public class ValueBlockState {
         if lbl.count == 2 {
             // Increment label counter
             let counter = (Int(lbl[1]) ?? 0) + 1
-            // Setlabel counter
+            // Set label counter
             new_label = "\(lbl[0]).\(counter)"
         } else {
             // Add .0 to labale name for future increments
@@ -110,12 +112,65 @@ public class ValueBlockState {
         }
         // Check is mew label exist
         if self.labels.contains(new_label) {
-            // Recalculate label with incresed label counter
+            // Recalculate label with increased label counter
             return self.set_and_get_label(new_label)
         } else {
-            // Insert label to unique label state
+            // Insert label to unique label set
             self.set_label(new_label)
         }
         return new_label
+    }
+
+    /// Calculate next `inner_name` incrementing it by 1. To check is new value exist in the current
+    /// `State` checked for that it. If `inner_name` do not containt increment value in the name
+    /// by default will be added `.0`.
+    /// **Main reason to do tha**t: Increment inner value name counter for shadowed variables.
+    public func get_next_inner_name(_ inner_name: String) -> String {
+        let name_attr = inner_name.split(separator: ".")
+        var new_name = ""
+        if name_attr.count == 2 {
+            // Increment label counter
+            let counter = (Int(name_attr[1]) ?? 0) + 1
+            // Set inner_name counter
+            new_name = "\(name_attr[0]).\(counter)"
+        } else {
+            // Add .0 to inner_name for future increments
+            new_name = "\(name_attr[0]).0"
+        }
+        if self.inner_values_name.contains(new_name) {
+            return self.get_next_inner_name(new_name)
+        }
+        return new_name
+    }
+}
+
+/// Function semantic definition
+public struct Function {
+    var inner_name: String
+    var inner_type: InnerType
+    var parameters: [InnerType]
+}
+
+/// Golab State contains:
+/// - `constants` set
+/// - `types` set
+/// - `functions` ser
+public struct GlobalState {
+    var constants: [String: Constant] = [:]
+    var types: Set<InnerType> = []
+    var functions: [String: Function] = [:]
+}
+
+/// Common `State`
+/// Contains entities:
+/// - `global` - global `State`
+/// - `global` - codegen for `State` that implements protocol `Codegen`
+public struct State<T: Codegen> {
+    /// `Global state` with preinit default empty `State`
+    var global = GlobalStatexx 
+    var codegen: T
+
+    init(codegen: T) {
+        self.codegen = codegen
     }
 }
