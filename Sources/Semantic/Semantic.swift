@@ -1,7 +1,5 @@
 import Foundation
 
-public protocol Codegen {}
-
 /// ValueName type
 public typealias ValueName = String
 /// InnerType type for values
@@ -167,7 +165,7 @@ public struct GlobalState {
 /// - `global` - codegen for `State` that implements protocol `Codegen`
 public struct State<T: Codegen> {
     /// `Global state` with preinit default empty `State`
-    var global = GlobalStatexx 
+    var global = GlobalState()
     var codegen: T
 
     init(codegen: T) {

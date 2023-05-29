@@ -9,6 +9,7 @@ let package = Package(
         .executable(name: "Compiler", targets: ["Compiler"]),
         .library(name: "Ast", targets: ["Ast"]),
         .library(name: "Semantic", targets: ["Semantic"]),
+        .library(name: "Backend", targets: ["Backend"]),
     ],
     dependencies: [
         .package(
@@ -20,6 +21,7 @@ let package = Package(
     targets: [
         .target(name: "Ast"),
         .target(name: "Semantic"),
+        .target(name: "Backend"),
         .executableTarget(
             name: "Compiler",
             dependencies: [
