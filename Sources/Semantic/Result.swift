@@ -4,7 +4,7 @@ public typealias StateResult<T> = Result<T, StateErrorResult>
 
 public enum StateErrorKind {
     case constantAlreadyExist
-    case caseTypeAlreadyExist
+    case typeAlreadyExist
     case functionAlreadyExist
     case valueNotFound
     case functionNotFound

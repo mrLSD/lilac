@@ -20,7 +20,8 @@ let package = Package(
     ],
     targets: [
         .target(name: "Ast"),
-        .target(name: "Semantic"),
+        .target(name: "Semantic",
+                dependencies: ["Ast"]),
         .target(name: "Backend"),
         .executableTarget(
             name: "Compiler",

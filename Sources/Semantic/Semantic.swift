@@ -1,3 +1,4 @@
+import Ast
 import Foundation
 
 /// ValueName type
@@ -149,7 +150,7 @@ public struct Function {
     var parameters: [InnerType]
 }
 
-/// Golab State contains:
+/// Global State contains:
 /// - `constants` set
 /// - `types` set
 /// - `functions` ser
@@ -162,7 +163,7 @@ public struct GlobalState {
 /// Common `State`
 /// Contains entities:
 /// - `global` - global `State`
-/// - `global` - codegen for `State` that implements protocol `Codegen`
+/// - `codegen` - codegen for `State` that implements protocol `Codegen`
 public struct State<T: Codegen> {
     /// `Global state` with preinit default empty `State`
     var global = GlobalState()
@@ -170,5 +171,34 @@ public struct State<T: Codegen> {
 
     init(codegen: T) {
         self.codegen = codegen
+    }
+}
+
+/// Result for `Expressions`
+public enum ExpressionResult {
+    case PrimitiveValue(PrimitiveValue)
+    case Register(UInt64)
+}
+
+/// Analyzer functions
+extension State {
+    /// Analyze AST `Struct type`. And add type to `Global State`. Pass codegen
+    ///
+    /// - Parameters:
+    ///     - data: Struct AST
+    ///
+    /// - Returns:
+    ///     - `success`: empty result, if type added
+    ///     - `faile`: if type already exist in the state
+    public mutating func struct_type(data: StructTypes) -> StateResult<Void> {
+        if self.global.types.contains(data.getName()) {
+            return .failure(StateErrorResult(
+                kind: StateErrorKind.typeAlreadyExist,
+                value: data.getName(),
+                location: StateErrorLocation(line: 0, column: 0)))
+        }
+        self.global.types.insert(data.getName())
+        self.codegen.set_struct_type(data: data)
+        return .success(())
     }
 }

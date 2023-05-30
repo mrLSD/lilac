@@ -72,7 +72,6 @@ public struct ValueName: GetName {
     }
 }
 
-private typealias RawString = String
 
 public enum PrimitiveType {
     case u8
@@ -91,7 +90,7 @@ public enum PrimitiveType {
     case None
 
     public func name() -> String {
-        RawString(describing: self)
+        Swift.String(describing: self)
     }
 }
 
