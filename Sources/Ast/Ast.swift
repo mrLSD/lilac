@@ -149,6 +149,10 @@ public struct Constant: GetName {
     public func getName() -> String {
         constant_name.getName()
     }
+
+        public func getType() -> String {
+        constant_type.getName()
+    }
 }
 
 public struct FunctionParameter: GetName {

@@ -181,7 +181,7 @@ public enum ExpressionResult {
 }
 
 /// Analyzer functions
-extension State {
+public extension State {
     /// Analyze AST `Struct type`. And add type to `Global State`. Pass codegen
     ///
     /// - Parameters:
@@ -190,7 +190,7 @@ extension State {
     /// - Returns:
     ///     - `success`: empty result, if type added
     ///     - `faile`: if type already exist in the state
-    public mutating func struct_type(data: StructTypes) -> StateResult<Void> {
+    mutating func struct_type(data: Ast.StructTypes) -> StateResult<Void> {
         if self.global.types.contains(data.getName()) {
             return .failure(StateErrorResult(
                 kind: StateErrorKind.typeAlreadyExist,
@@ -199,6 +199,19 @@ extension State {
         }
         self.global.types.insert(data.getName())
         self.codegen.set_struct_type(data: data)
+        return .success(())
+    }
+
+    /// Analyze AST `Constant`. And add type to `Global State`. Pass codegen
+    mutating func constant(data: Ast.Constant) -> StateResult<Void> {
+        if  self.global.constants[data.getName()] != nil {
+            return .failure(StateErrorResult(
+                kind: StateErrorKind.constantAlreadyExist,
+                value: data.getName(),
+                location: StateErrorLocation(line: 0, column: 0)))
+        }
+        self.global.constants[data.getName()] = Constant(name: data.getName(), inner_type: data.getType())
+        self.codegen.set_constant(data: data)
         return .success(())
     }
 }
