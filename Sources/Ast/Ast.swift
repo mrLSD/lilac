@@ -72,7 +72,6 @@ public struct ValueName: GetName {
     }
 }
 
-
 public enum PrimitiveType {
     case u8
     case u16
@@ -150,7 +149,7 @@ public struct Constant: GetName {
         constant_name.getName()
     }
 
-        public func getType() -> String {
+    public func getType() -> String {
         constant_type.getName()
     }
 }
@@ -162,16 +161,24 @@ public struct FunctionParameter: GetName {
     public func getName() -> String {
         parameter_name.getName()
     }
+
+    public func getType() -> String {
+        parameter_type.getName()
+    }
 }
 
 public struct FunctionStatement: GetName {
     let name: FunctionName
-    let parameters: [FunctionParameter]
+    public let parameters: [FunctionParameter]
     let result_type: Type
-    let body: [BodyStatement]
+    public let body: [BodyStatement]
 
     public func getName() -> String {
         name.getName()
+    }
+
+    public func getType() -> String {
+        result_type.getName()
     }
 }
 

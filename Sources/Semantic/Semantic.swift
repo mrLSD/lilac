@@ -204,7 +204,7 @@ public extension State {
 
     /// Analyze AST `Constant`. And add type to `Global State`. Pass codegen
     mutating func constant(data: Ast.Constant) -> StateResult<Void> {
-        if  self.global.constants[data.getName()] != nil {
+        if self.global.constants[data.getName()] != nil {
             return .failure(StateErrorResult(
                 kind: StateErrorKind.constantAlreadyExist,
                 value: data.getName(),
@@ -214,4 +214,36 @@ public extension State {
         self.codegen.set_constant(data: data)
         return .success(())
     }
+
+    mutating func function(data: Ast.FunctionStatement) -> StateResult<Void> {
+        if self.global.functions[data.getName()] != nil {
+            return .failure(StateErrorResult(
+                kind: StateErrorKind.functionAlreadyExist,
+                value: data.getName(),
+                location: StateErrorLocation(line: 0, column: 0)))
+        }
+        self.global.functions[data.getName()] = Function(
+            inner_name: data.getName(),
+            inner_type: data.getType(),
+            parameters: data.parameters.map { $0.getType() })
+
+        self.codegen.function_declaration(data: data)
+        return .success(())
+    }
+
+    mutating func function_body(data: Ast.FunctionStatement) {
+        var state = ValueBlockState()
+        for body in data.body {
+            switch body {
+            case .LetBinding(_): return ()
+            case .FunctionCall(_): return ()
+            case .Expression(_): return ()
+            case .If(_): return ()
+            case .Loop([_,_): return ()
+            case .Return(_): return ()
+            }
+        }
+    }
+
+    mutating func let_binding() {}
 }
